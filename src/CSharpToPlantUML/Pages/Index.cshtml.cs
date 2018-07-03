@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using CSharpToPlantUML.Converter;
 using CSharpToPlantUML.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -18,11 +18,20 @@ namespace CSharpToPlantUML.Pages
         public DiagramOutputFormat OutputFormat { get; set; }
 
         [BindProperty]
-        public byte[] Data { get; set; }
+        public Conversion Conversion { get; set; }
         
-        public async Task<IActionResult> OnPostAsync()
+        public IActionResult OnPost()
         {
-            Data = Encoding.Default.GetBytes($"FORMAT={OutputFormat}");
+            try
+            {
+                var puml = SourceToPlantUMLConverter.GetPlantUml(CSharpSource);
+                Conversion = Conversion.FromPlantUML(puml);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Conversion = Conversion.Failure();
+            }
             return Page();
         }
     }

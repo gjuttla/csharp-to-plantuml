@@ -2,8 +2,8 @@
 {
     public enum DiagramOutputFormat
     {
-        PlantUML,
         PNG,
-        SVG
+        SVG,
+        PlantUML
     }
 }

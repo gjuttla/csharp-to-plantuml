@@ -1,6 +1,6 @@
 ﻿@page
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@using System.Text
+@using CSharpToPlantUML.Converter
 @using CSharpToPlantUML.Domain
 @using CSharpToPlantUML.Pages
 @model IndexModel
@@ -13,29 +13,53 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-<h1>C# To PlantUML Converter</h1>
+<h1>C# To PlantUML</h1>
 <form method="post">
     <div>
-        C# source:<br/>
+        <h4>C# source:</h4>
         <textarea asp-for="CSharpSource"></textarea>
     </div>
     <div>
-        Output format:
-        <select asp-for="OutputFormat" asp-items="Html.GetEnumSelectList<DiagramOutputFormat>()"></select>
+        <h4>Output format: <select asp-for="OutputFormat" asp-items="Html.GetEnumSelectList<DiagramOutputFormat>()"></select></h4>
+        
     </div>
     <input type="submit"/>
 </form>
-@if (@Model?.Data != null)
+@if (@Model?.Conversion != null)
 {
+    <br/>
     <hr>
-    switch (@Model.OutputFormat)
+    <br/>
+    <h4>Output:</h4>
+    if (Model.Conversion.Succeeded)
     {
-        case DiagramOutputFormat.PlantUML:
-        case DiagramOutputFormat.SVG:
-            <textarea readonly="readonly">@Encoding.Default.GetString(@Model.Data)</textarea>
-            break;
-        case DiagramOutputFormat.PNG:
-            break;
+        switch (@Model.OutputFormat)
+        {
+            case DiagramOutputFormat.PNG:
+                var pngUrl = PlantUMLToImageUrlConverter.GetImageUrl(@Model.Conversion.PlantUML);
+                <img src="@pngUrl">
+                break;
+                
+            case DiagramOutputFormat.SVG:
+                var svgContent = await PlantUMLToSvgConverter.GetSvgContent(@Model.Conversion.PlantUML);
+                if (svgContent == null)
+                {
+                    <p class="conversion-error">Conversion from C# code to SVG failed.</p>
+                }
+                else
+                {
+                    <textarea readonly="readonly">@svgContent</textarea>
+                }
+                break;
+                
+            case DiagramOutputFormat.PlantUML:
+                <textarea readonly="readonly">@Model.Conversion.PlantUML</textarea>
+                break;
+        }
+    }
+    else
+    {
+        
     }
 }
 </body>
