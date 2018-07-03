@@ -21,7 +21,6 @@
     </div>
     <div>
         <h4>Output format: <select asp-for="OutputFormat" asp-items="Html.GetEnumSelectList<DiagramOutputFormat>()"></select></h4>
-        
     </div>
     <input type="submit"/>
 </form>
@@ -59,7 +58,7 @@
     }
     else
     {
-        
+        <p class="conversion-error">Conversion from C# code to PlantUML code failed.</p>
     }
 }
 </body>
