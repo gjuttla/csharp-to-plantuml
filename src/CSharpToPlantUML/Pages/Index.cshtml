@@ -1,0 +1,66 @@
+﻿@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using CSharpToPlantUML.Converter
+@using CSharpToPlantUML.Domain
+@using CSharpToPlantUML.Pages
+@model IndexModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C# To PlantUML</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<h1>C# To PlantUML</h1>
+<form method="post">
+    <div>
+        <h4>C# source:</h4>
+        <textarea asp-for="CSharpSource"></textarea>
+    </div>
+    <div>
+        <h4>Output format: <select asp-for="OutputFormat" asp-items="Html.GetEnumSelectList<DiagramOutputFormat>()"></select></h4>
+        
+    </div>
+    <input type="submit"/>
+</form>
+@if (@Model?.Conversion != null)
+{
+    <br/>
+    <hr>
+    <br/>
+    <h4>Output:</h4>
+    if (Model.Conversion.Succeeded)
+    {
+        switch (@Model.OutputFormat)
+        {
+            case DiagramOutputFormat.PNG:
+                var pngUrl = PlantUMLToImageUrlConverter.GetImageUrl(@Model.Conversion.PlantUML);
+                <img src="@pngUrl">
+                break;
+                
+            case DiagramOutputFormat.SVG:
+                var svgContent = await PlantUMLToSvgConverter.GetSvgContent(@Model.Conversion.PlantUML);
+                if (svgContent == null)
+                {
+                    <p class="conversion-error">Conversion from C# code to SVG failed.</p>
+                }
+                else
+                {
+                    <textarea readonly="readonly">@svgContent</textarea>
+                }
+                break;
+                
+            case DiagramOutputFormat.PlantUML:
+                <textarea readonly="readonly">@Model.Conversion.PlantUML</textarea>
+                break;
+        }
+    }
+    else
+    {
+        
+    }
+}
+</body>
+</html>

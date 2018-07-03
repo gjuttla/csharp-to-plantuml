@@ -1,0 +1,3 @@
+[submodule "lib/PlantUmlClassDiagramGenerator"]
+	path = lib/PlantUmlClassDiagramGenerator
+	url = https://github.com/gjuttla/PlantUmlClassDiagramGenerator.git
