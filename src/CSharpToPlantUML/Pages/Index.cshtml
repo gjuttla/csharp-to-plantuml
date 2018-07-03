@@ -1,0 +1,42 @@
+﻿@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Text
+@using CSharpToPlantUML.Domain
+@using CSharpToPlantUML.Pages
+@model IndexModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C# To PlantUML</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<h1>C# To PlantUML Converter</h1>
+<form method="post">
+    <div>
+        C# source:<br/>
+        <textarea asp-for="CSharpSource"></textarea>
+    </div>
+    <div>
+        Output format:
+        <select asp-for="OutputFormat" asp-items="Html.GetEnumSelectList<DiagramOutputFormat>()"></select>
+    </div>
+    <input type="submit"/>
+</form>
+@if (@Model?.Data != null)
+{
+    <hr>
+    switch (@Model.OutputFormat)
+    {
+        case DiagramOutputFormat.PlantUML:
+        case DiagramOutputFormat.SVG:
+            <textarea readonly="readonly">@Encoding.Default.GetString(@Model.Data)</textarea>
+            break;
+        case DiagramOutputFormat.PNG:
+            break;
+    }
+}
+</body>
+</html>
